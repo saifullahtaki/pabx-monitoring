@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asterisk Monitoring Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Asterisk Monitoring Dashboard</h1>
+            <div class="refresh-control">
+                <label for="refresh-interval">Refresh Interval:</label>
+                <select id="refresh-interval">
+                    <option value="1000">1s</option>
+                    <option value="5000" selected>5s</option>
+                    <option value="10000">10s</option>
+                    <option value="15000">15s</option>
+                </select>
+            </div>
+        </header>
+        <div class="nav-bar">
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        </div>
+        <div class="grid">
+            <!-- Active Calls -->
+            <div class="card">
+                <h2>Active Calls</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Channel ID</th>
+                                <th>Caller</th>
+                                <th>Callee</th>
+                                <th>Status</th>
+                                <th>Duration (s)</th>
+                                <th>Packet Loss (%)</th>
+                                <th>Jitter (ms)</th>
+                                <th>RTT (ms)</th>
+                                <th>Codec</th>
+                            </tr>
+                        </thead>
+                        <tbody id="active-calls"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Current Channels -->
+            <div class="card">
+                <h2>Current Channels</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th>Location</th>
+                                <th>Application</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="current-channels"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- PJSIP Endpoints -->
+            <div class="card">
+                <h2>PJSIP Endpoints</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>State</th>
+                                <th>AOR</th>
+                                <th>Auth</th>
+                                <th>Transport</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pjsip-endpoints"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- PJSIP Contacts -->
+            <div class="card">
+                <h2>PJSIP Contacts</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Contact</th>
+                                <th>Hash</th>
+                                <th>Status</th>
+                                <th>RTT (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pjsip-contacts"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Phone Status -->
+            <div class="card">
+                <h2>Phone Status</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Extension</th>
+                                <th>Status</th>
+                                <th>Packet Loss (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="phone-status"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

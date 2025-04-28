@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/sidebar_toggle.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+    <script>
+        // Initialize sidebar state
+        if (localStorage.getItem('sidebarMinimized') === 'true') {
+            document.body.classList.add('minimized-sidebar');
+            document.querySelector('.toggle-btn').innerHTML = '<i class="fas fa-chevron-right"></i>';
+        } else {
+            document.querySelector('.toggle-btn').innerHTML = '<i class="fas fa-chevron-left"></i>';
+        }
+    </script>
+    <div class="sidebar">
+        <div class="toggle-btn">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <a href="{{ url_for('user_dashboard') }}" class="sidebar-title"><h2>User Panel</h2></a>
+        <ul>
+            <li><a href="{{ url_for('user_dashboard') }}"><i class="fas fa-home"></i><span class="sidebar-text"> Dashboard</span></a></li>
+            <li><a href="{{ url_for('user_add_locations') }}"><i class="fas fa-map-marker-alt"></i><span class="sidebar-text"> Add Locations</span></a></li>
+            <li><a href="{{ url_for('user_change_password') }}"><i class="fas fa-key"></i><span class="sidebar-text"> Change Password</span></a></li>
+        </ul>
+        <ul class="logout">
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i><span class="sidebar-text"> Logout</span></a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h1>User Dashboard</h1>
+        <div class="card">
+            <h3>Welcome, {{ session.username }}!</h3>
+            <p>This is your user dashboard. You can monitor Asterisk activity and change your password from the sidebar.</p>
+        </div>
+        <!-- Manage Phone Status -->
+        <div class="card">
+            <h3>Add Phone Status</h3>
+            <form method="POST" action="{{ url_for('add_phone_status') }}" class="phone-status-form">
+                <div class="form-group">
+                    <label for="extension">Extension</label>
+                    <input type="text" id="extension" name="extension" required>
+                </div>
+                <div class="form-group">
+                    <label for="number">Number</label>
+                    <input type="text" id="number" name="number" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <select id="location" name="location" class="location-select" required>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ip">IP</label>
+                    <input type="text" id="ip" name="ip" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Entry</button>
+            </form>
+        </div>
+        <!-- Asterisk Monitoring Dashboard -->
+        <div class="container">
+            <header class="header">
+                <h1>Asterisk Monitoring Dashboard</h1>
+                <div class="flex items-center gap-4">
+                    <div class="refresh-control">
+                        <label for="refresh-interval">Refresh Interval:</label>
+                        <select id="refresh-interval">
+                            <option value="1000">1s</option>
+                            <option value="5000" selected>5s</option>
+                            <option value="10000">10s</option>
+                            <option value="15000">15s</option>
+                        </select>
+                    </div>
+                    <button id="add-table-btn" class="btn btn-primary">+ Add Table</button>
+                </div>
+            </header>
+            <div id="dashboard-tables" class="flex flex-col gap-4"></div>
+            <div id="modal-overlay" class="overlay" style="display: none;"></div>
+            <div id="add-table-modal" class="add-table-modal" style="display: none;">
+                <h3>Add Table</h3>
+                <form id="add-table-form">
+                    <select name="table">
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            <div id="modify-phone-status-modal" class="add-table-modal" style="display: none;">
+                <h3>Modify Phone Status</h3>
+                <form id="modify-phone-status-form" method="POST" action="">
+                    <div class="form-group">
+                        <label for="modify-extension">Extension</label>
+                        <input type="text" id="modify-extension" name="extension" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modify-number">Number</label>
+                        <input type="text" id="modify-number" name="number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modify-name">Name</label>
+                        <input type="text" id="modify-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modify-location">Location</label>
+                        <select id="modify-location" name="location" class="location-select" required>
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modify-ip">IP</label>
+                        <input type="text" id="modify-ip" name="ip" required>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            <div id="edit-location-modal" class="add-table-modal" style="display: none;">
+                <h3>Edit Location</h3>
+                <form id="edit-location-form" method="POST" action="">
+                    <div class="form-group">
+                        <label for="edit-location-name">Location Name</label>
+                        <input type="text" id="edit-location-name" name="location_name" required>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" onclick="hideEditLocationModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

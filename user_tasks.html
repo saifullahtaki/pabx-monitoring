@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/sidebar_toggle.js') }}" defer></script>
+</head>
+<body>
+    <script>
+        // Initialize sidebar state
+        if (localStorage.getItem('sidebarMinimized') === 'true') {
+            document.body.classList.add('minimized-sidebar');
+            document.querySelector('.toggle-btn').innerHTML = '<i class="fas fa-chevron-right"></i>';
+        } else {
+            document.querySelector('.toggle-btn').innerHTML = '<i class="fas fa-chevron-left"></i>';
+        }
+    </script>
+    <div class="sidebar">
+        <div class="toggle-btn">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <a href="{{ url_for('user_dashboard') }}" class="sidebar-title"><h2>User Panel</h2></a>
+        <ul>
+            <li><a href="{{ url_for('user_dashboard') }}"><i class="fas fa-home"></i><span class="sidebar-text"> Dashboard</span></a></li>
+            <li><a href="{{ url_for('user_tasks') }}"><i class="fas fa-tasks"></i><span class="sidebar-text"> My Tasks</span></a></li>
+            <li><a href="{{ url_for('user_change_password') }}"><i class="fas fa-key"></i><span class="sidebar-text"> Change Password</span></a></li>
+        </ul>
+        <ul class="logout">
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i><span class="sidebar-text"> Logout</span></a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h1>My Tasks</h1>
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        <tr>
+                            <td>{{ task[1] }}</td>
+                            <td>{{ task[2] }}</td>
+                            <td>{{ task[3] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

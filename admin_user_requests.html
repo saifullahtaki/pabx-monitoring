@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Requests</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/sidebar_toggle.js') }}" defer></script>
+</head>
+<body>
+    <script>
+        // Initialize sidebar state
+        if (localStorage.getItem('sidebarMinimized') === 'true') {
+            document.body.classList.add('minimized-sidebar');
+            document.querySelector('.toggle-btn').innerHTML = '<i class="fas fa-chevron-right"></i>';
+        } else {
+            document.querySelector('.toggle-btn').innerHTML = '<i class="fas fa-chevron-left"></i>';
+        }
+    </script>
+    <div class="sidebar">
+        <div class="toggle-btn">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="sidebar-title"><h2>Admin Panel</h2></a>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-home"></i><span class="sidebar-text"> Dashboard</span></a></li>
+            <li><a href="{{ url_for('admin_users') }}"><i class="fas fa-users"></i><span class="sidebar-text"> Users</span></a></li>
+            <li><a href="{{ url_for('admin_user_requests') }}"><i class="fas fa-user-plus"></i><span class="sidebar-text"> User Requests</span></a></li>
+            <li><a href="{{ url_for('admin_change_password') }}"><i class="fas fa-key"></i><span class="sidebar-text"> Change Password</span></a></li>
+        </ul>
+        <ul class="logout">
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i><span class="sidebar-text"> Logout</span></a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h1>User Requests</h1>
+        <div class="card">
+            <div class="users-list-title">Pending Requests</div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                        <tr>
+                            <td>{{ request[1] }}</td>
+                            <td>{{ request[2] }}</td>
+                            <td class="actions-cell">
+                                <a href="{{ url_for('approve_user', user_id=request[0]) }}" class="btn btn-primary">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="{{ url_for('reject_user', user_id=request[0]) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this request?')">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
